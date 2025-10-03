@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/ashep/go-gerber/gerber"
 )
 
 // FS (Format Specification) specifies the format of the coordinate data. The FS command is mandatory.
@@ -11,8 +13,8 @@ import (
 // It is recommended to put it as the very first non-comment line.
 // The format of X and Y coordinate must be the same.
 type FS struct {
-	X int
-	Y int
+	intDig int
+	decDig int
 }
 
 func NewFS(line string) (*FS, error) {
@@ -32,13 +34,13 @@ func NewFS(line string) (*FS, error) {
 		return nil, fmt.Errorf("not an FS command: %s", line)
 	}
 
-	x, err := strconv.Atoi(line[5:7])
-	if err != nil {
+	x := line[5:7]
+	if _, err := strconv.Atoi(x); err != nil {
 		return nil, fmt.Errorf("invalid X value in FS command: %s", line)
 	}
 
-	y, err := strconv.Atoi(line[8:10])
-	if err != nil {
+	y := line[8:10]
+	if _, err := strconv.Atoi(y); err != nil {
 		return nil, fmt.Errorf("invalid Y value in FS command: %s", line)
 	}
 
@@ -46,16 +48,15 @@ func NewFS(line string) (*FS, error) {
 		return nil, fmt.Errorf("X and Y must equal: %s", line)
 	}
 
+	xInt, _ := strconv.Atoi(x[:1])
+	xDec, _ := strconv.Atoi(x[1:])
+
 	return &FS{
-		X: x,
-		Y: y,
+		intDig: xInt,
+		decDig: xDec,
 	}, nil
 }
 
-func (c *FS) SVG() string {
-	return ""
-}
-
-func (c *FS) GCode() string {
-	return ""
+func (c *FS) Apply(g *gerber.Gerber) {
+	g.SetFormat(c.intDig, c.decDig)
 }

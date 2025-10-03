@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/ashep/go-gerber"
-
 	"github.com/stretchr/testify/require"
 )
 
@@ -16,7 +15,7 @@ var (
 )
 
 func TestAll(t *testing.T) {
-	gbr, err := gerber.FromBytes(testDataCopperTop)
+	gbr, err := gogerber.FromBytes(testDataCopperTop)
 	require.NoError(t, err)
 
 	fmt.Println(gbr)
